@@ -15,6 +15,10 @@ def only_numerics(seq):
     seq_type= type(seq)
     return seq_type().join(filter(seq_type.isdigit, seq))
 
+def only_chars(seq):
+    seq_type= type(seq)
+    return str(seq_type().join(filter(seq_type.isalnum, seq))).lower()
+
 HEADERS = ({'User-Agent':
             'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
             'Accept-Language': 'en-US, en;q=0.5'})
@@ -25,7 +29,7 @@ t1=soup.find_all('li', {"class" : re.compile('product type-product post.*')} )
 
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
 
-tt=datetime.datetime.utcnow().isoformat()
+ts=datetime.datetime.utcnow().isoformat()
 
 for num in t1:
     link = [a['href'] for a in  num.find_all('a',    {"class" : re.compile('woocommerce-LoopProduct-link woocommerce-loop-product__link')}  )  ][0]
@@ -61,13 +65,13 @@ for num in t1:
         "ticketssold": int(ticketssold),
         "tickerprice": float(price),
         "link": link,
-        "@timestamp": tt
+        "@timestamp": ts
         }
         y = json.dumps(x)
         print(y) 
         mdx=hashlib.md5(y.encode('utf-8')).hexdigest()
 #        print(mdx)
-        res = es.index(index="dreamcargiveaways", id=mdx, body=x)
+        res = es.index(index="dreamcargiveaways-"+only_chars(label), id=mdx, body=x)
         print(res['result'])
     except:
         xxx=0
