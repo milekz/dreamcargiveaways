@@ -25,7 +25,7 @@ t1=soup.find_all('li', {"class" : re.compile('product type-product post.*')} )
 
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
 
-tt=datetime.datetime.now().isoformat()
+tt=datetime.datetime.utcnow().isoformat()
 
 for num in t1:
     link = [a['href'] for a in  num.find_all('a',    {"class" : re.compile('woocommerce-LoopProduct-link woocommerce-loop-product__link')}  )  ][0]
